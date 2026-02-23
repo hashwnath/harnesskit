@@ -1,0 +1,135 @@
+# Agent Guide — {{projectName}}
+
+> This file is the **table of contents**, not the encyclopedia.
+> Read the linked docs for depth; keep this under 100 lines.
+
+## What Is This Repo?
+
+**{{projectName}}** — {{projectDescription}}
+
+## Quick Map
+
+| Topic | Location |
+|-------|----------|
+| Architecture & layer rules | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| Quality grades per domain | [docs/QUALITY_SCORE.md](docs/QUALITY_SCORE.md) |
+| Active execution plans | [docs/exec-plans/active/](docs/exec-plans/active/) |
+| Completed plans | [docs/exec-plans/completed/](docs/exec-plans/completed/) |
+| Core beliefs | [docs/design-docs/core-beliefs.md](docs/design-docs/core-beliefs.md) |
+
+## Build & Run
+
+```bash
+{{buildCmd}}
+{{testCmd}}
+{{lintCmd}}
+{{startCmd}}
+```
+
+## Layer Rules (Summary)
+
+```
+{{layerDiagram}}
+```
+
+- **No upward imports** — lower layers must not import from higher layers.
+- Cross-cutting concerns enter through the provider/shared layer.
+- Enforced by `harness-lab enforce` or `scripts/check-architecture.*`
+
+## Review Loop (Peer Agent Reviews)
+
+All changes go through the **review loop** before shipping:
+
+```
+Planner → Implementer → [Review Loop] → Ship
+                           ↓
+                  Arch Reviewer    → checks layer violations
+                  Security Reviewer → checks secrets & auth
+                  Reviewer          → final quality gate
+                           ↑
+              If ANY FAIL → back to Implementer
+              If ALL PASS → Ship
+```
+
+Each reviewer produces a PASS/FAIL report. The Implementer iterates until all pass.
+
+## Quick Start (Existing Docs)
+
+Already have PRDs, architecture docs, or requirement specs?
+1. Drop them into `docs/references/`
+2. Run `harness-lab ingest`
+3. Paste the generated instruction into your coding agent
+4. The agent auto-populates all source-of-truth files
+
+## PR Workflow
+
+Every change follows this flow — whether driven by a human or an AI agent:
+
+| Step | Who | What |
+|------|-----|------|
+| 1. Plan | Human or Planner agent | Create/select an exec-plan in `docs/exec-plans/active/` |
+| 2. Implement | Implementer agent | Write code following layer rules, referencing the exec-plan |
+| 3. Self-check | Implementer agent | Run build + test + lint locally before committing |
+| 4. Open PR | Implementer agent (or human) | Push branch, open PR with exec-plan link in description |
+| 5. Review loop | Arch → Security → Reviewer | Each reviewer agent checks their domain; ANY fail → back to step 2 |
+| 6. CI gate | Automated | `harness-lab enforce` + `harness-lab doctor` must pass in CI |
+| 7. Merge | Human | A human reviews and merges — per OpenAI: "users must manually review and validate all agent-generated code" |
+| 8. Post-merge | Doc-Gardener agent | Updates QUALITY_SCORE.md, checks doc links |
+
+> **Rule**: Agents propose changes and open PRs. Humans review, approve, and merge (per [OpenAI Codex guidance](https://openai.com/index/introducing-codex/): "users must manually review and validate all agent-generated code before integration").
+
+## Responsibility Matrix
+
+| Action | Agent Can Do | Human Must Do |
+|--------|-------------|---------------|
+| Read source-of-truth docs | ✅ | ✅ |
+| Write / modify code | ✅ | ✅ |
+| Run tests & linters | ✅ | ✅ |
+| Create branches & open PRs | ✅ | ✅ |
+| Review code (flag issues) | ✅ | ✅ |
+| Approve PRs | ❌ | ✅ |
+| Merge PRs | ❌ | ✅ |
+| Deploy to production | ❌ | ✅ |
+| Create/update design docs | ✅ (draft) | ✅ (approve) |
+| Modify AGENTS.md | ❌ | ✅ |
+
+## CI Feedback Loop
+
+When CI runs on a PR, the following checks execute automatically:
+
+1. `harness-lab enforce` — validates architecture layer rules
+2. `harness-lab doctor` — checks scaffold health & completeness
+3. Standard build / test / lint pipeline
+
+If any check fails, the agent reads the CI output and self-corrects:
+```
+CI Fail → Agent reads logs → Fixes code → Pushes update → CI re-runs
+```
+This loop repeats until CI is green or the agent requests human help.
+
+## CLI Agent Compatibility
+
+This repo works with **any** coding agent — GUI-based or CLI-based:
+
+| Agent | Type | Config File | How It Reads This Repo |
+|-------|------|------------|------------------------|
+| GitHub Copilot (VS Code) | GUI | `.github/copilot-instructions.md` | Reads AGENTS.md + copilot-instructions |
+| Cursor | GUI | `.cursorrules` | Reads AGENTS.md + .cursorrules |
+| Claude Code | CLI | `CLAUDE.md` | Reads AGENTS.md + CLAUDE.md |
+| Windsurf / Codeium | GUI | `.windsurfrules` | Reads AGENTS.md + .windsurfrules |
+| JetBrains (Junie) | GUI | `.junie/guidelines.md` | Reads AGENTS.md + guidelines |
+| OpenAI Codex CLI | CLI | `codex.md` | Reads AGENTS.md + codex.md |
+| Kiro (AWS) | IDE + CLI | `.kiro/steering/` | Reads AGENTS.md + steering files |
+| Antigravity (Google) | IDE | `.agent/` | Reads AGENTS.md + agent instructions |
+| Gemini CLI (Google) | CLI | `.gemini/` | Reads AGENTS.md + gemini instructions |
+| Aider | CLI | — | Reads AGENTS.md (convention files) |
+| Amazon Q CLI | CLI | — | Reads AGENTS.md |
+| Cline | CLI | — | Reads AGENTS.md |
+
+> **All agents** should start by reading `AGENTS.md` — it is the universal entry point.
+
+## When Unsure
+
+1. Read the relevant `docs/` file first.
+2. Check `docs/design-docs/` for prior decisions.
+3. If no doc exists, create one before implementing.

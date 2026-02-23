@@ -1,0 +1,26 @@
+name: Harness Engineering Checks
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+jobs:
+  harness-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Architecture Enforcement
+        run: npx harness-lab@latest enforce
+
+      - name: Doc Health Check
+        run: npx harness-lab@latest doctor
+
+      - name: Doc Garden (link check)
+        run: npx harness-lab@latest garden

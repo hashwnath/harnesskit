@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.*
+
+# Build / output
+dist/
+coverage/
+*.tgz
+
+# Logs
+*.log
+npm-debug.log*
+
+# Generated harness output (from self-testing)
+AGENTS.md
+docs/ARCHITECTURE.md
+docs/QUALITY_SCORE.md
+docs/RELIABILITY.md
+docs/SECURITY.md
+docs/design-docs/
+docs/exec-plans/
+docs/generated/
+docs/product-specs/
+docs/references/
+.github/copilot-instructions.md
+.github/agents/

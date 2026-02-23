@@ -1,0 +1,19 @@
+# {{projectName}} — Architecture
+
+## Layer Diagram
+
+```
+{{layerDiagram}}
+```
+
+## Dependency Rules
+
+{{layerRules}}
+
+## Key Principle
+
+**Enforce invariants, not implementations.** Within the allowed dependency directions, agents have freedom in how solutions are expressed. The code doesn't have to match human stylistic preference — it must be correct, tested, and maintainable.
+
+## Cross-Cutting Concerns
+
+Auth, logging, database access, and other cross-cutting concerns enter through the shared/provider layer. No direct access from other layers.
