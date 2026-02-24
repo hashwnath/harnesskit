@@ -6,7 +6,7 @@
 import { join } from 'node:path';
 import { detectLanguage, detectIDEs, detectGitProvider, detectProjectName, detectCLIAgents, detectToolingNeeds } from '../detect.js';
 import { ask, select, multiSelect, confirm, closeRL } from '../prompt.js';
-import { printBanner, heading, step, info, color, bold } from '../ui.js';
+import { printBanner, heading, step, info, color, bold, dim, box, divider, printTree, printKV, success, warn } from '../ui.js';
 import { generate, writeFile } from '../template-engine.js';
 import { generateAgents } from '../generators/agents.js';
 import { generateTooling, getActiveMcpSummary } from '../generators/tooling.js';
@@ -175,49 +175,80 @@ export async function init(targetDir, flags) {
 
   // 3. Summary
   heading('Done!');
-  console.log(`
-${bold('Your repo is now set up for Harness Engineering.')}
 
-${color('What was created:', 'cyan')}
-  ${color('●', 'green')} AGENTS.md — universal agent instructions (read by all tools)
-  ${color('●', 'green')} docs/ARCHITECTURE.md — layer rules & dependency diagram
-  ${color('●', 'green')} docs/QUALITY_SCORE.md — per-domain quality grades
-  ${color('●', 'green')} docs/SECURITY.md — security posture & data classification
-  ${color('●', 'green')} docs/RELIABILITY.md — bootability, health checks & SLA targets
-  ${color('●', 'green')} docs/design-docs/ — design decisions (README + core-beliefs)
-  ${color('●', 'green')} docs/exec-plans/ — execution plan templates
-  ${color('●', 'green')} docs/product-specs/, references/, generated/ — placeholder dirs
-  ${color('●', 'green')} Agent configs for: ${config.ides.join(', ')}
-  ${color('●', 'green')} MCP server configs (per-IDE)
-  ${color('●', 'green')} .env.example — required tokens & keys
-  ${color('●', 'green')} .vscode/settings.json — editor & agent-mode settings
-  ${color('●', 'green')} .vscode/extensions.json — recommended extensions${config.git === 'github' ? `\n  ${color('●', 'green')} .github/workflows/harness-checks.yml — CI enforcement` : config.git === 'ado' ? `\n  ${color('●', 'green')} harness-checks.azure-pipelines.yml — CI enforcement` : ''}
+  // ── Created files tree ──────────────────────────────────────
+  console.log('');
+  console.log(`  ${bold(color('Scaffolded files', 'surface'))}`);
+  console.log('');
 
-${color('Active MCP Servers:', 'cyan')}
-${getActiveMcpSummary(ctx).map(s => `  ${color('●', 'green')} ${s.name} — ${s.description}`).join('\n')}
+  const createdItems = [
+    { label: 'AGENTS.md',                 detail: 'universal agent instructions' },
+    { label: 'docs/ARCHITECTURE.md',      detail: 'layer rules & dependency graph' },
+    { label: 'docs/QUALITY_SCORE.md',     detail: 'per-domain quality grades' },
+    { label: 'docs/SECURITY.md',          detail: 'security posture & data classification' },
+    { label: 'docs/RELIABILITY.md',       detail: 'bootability, health checks & SLAs' },
+    { label: 'docs/design-docs/',         detail: 'decisions + core-beliefs' },
+    { label: 'docs/exec-plans/',          detail: 'execution plan templates' },
+    { label: `Agent configs`,             detail: config.ides.join(', ') },
+    { label: 'MCP server configs',        detail: 'per-IDE connections' },
+    { label: '.env.example',              detail: 'required tokens & keys' },
+    { label: '.vscode/',                  detail: 'settings + recommended extensions' },
+  ];
+  if (config.git === 'github')  createdItems.push({ label: '.github/workflows/', detail: 'CI enforcement' });
+  if (config.git === 'ado')     createdItems.push({ label: 'azure-pipelines.yml', detail: 'CI enforcement' });
+  printTree(createdItems);
 
-${color('PR Workflow:', 'magenta')}
-  Plan → Implement → Self-check → Open PR → Review Loop → CI Gate → ${bold('Human Merges')}
-  ${color('⚠', 'yellow')}  Agents open PRs and flag issues. ${bold('Only humans approve and merge.')}
+  // ── Active MCP servers ──────────────────────────────────────
+  const mcpServers = getActiveMcpSummary(ctx);
+  if (mcpServers.length) {
+    console.log('');
+    console.log(`  ${bold(color('MCP Servers', 'surface'))}`);
+    console.log('');
+    printTree(mcpServers.map(s => ({ label: s.name, detail: s.description })), { icon: '⚡' });
+  }
 
-${color('CLI Agents Detected:', 'cyan')}
-${cliAgents.map(a => `  ${a.available ? color('●', 'green') : color('○', 'dim')} ${a.name}${a.available ? '' : ' (not found)'}`).join('\n')}
+  // ── CLI agents detected ─────────────────────────────────────
+  console.log('');
+  console.log(`  ${bold(color('CLI Agents', 'surface'))}`);
+  console.log('');
+  for (const a of cliAgents) {
+    if (a.available) {
+      console.log(`    ${color('●', 'success')} ${color(a.name, 'surface')}`);
+    } else {
+      console.log(`    ${color('○', 'muted')} ${dim(a.name)}  ${dim('(not found)')}`);
+    }
+  }
 
-${color('Next steps:', 'yellow')}
-  1. Review AGENTS.md and customize for your project
-  2. Review docs/ARCHITECTURE.md — ${archResult.discovered ? `${archResult.layers.length} layers discovered from your project structure` : `generic layer rules for ${color(config.lang, 'cyan')} (add folders and re-run to auto-detect)`}
-  3. Review docs/SECURITY.md and docs/RELIABILITY.md
-  4. Open your IDE and try the ${bold('Planner')} agent
-  5. Run ${color('harness-lab doctor', 'cyan')} to check setup health
-  6. Run ${color('harness-lab enforce', 'cyan')} to validate architecture
+  // ── Workflow diagram ────────────────────────────────────────
+  console.log('');
+  divider();
+  console.log('');
+  console.log(`  ${bold(color('Agent Workflow', 'surface'))}`);
+  console.log('');
+  console.log(`    ${color('You', 'primary')} ${dim('→')} ${color('Planner', 'secondary')} ${dim('→')} ${color('Implementer', 'secondary')} ${dim('→')} ${color('[', 'muted')}${color('Arch', 'accent')} ${dim('·')} ${color('Security', 'accent')} ${dim('·')} ${color('Reviewer', 'accent')}${color(']', 'muted')} ${dim('→')} ${bold(color('Ship', 'success'))}`);
+  console.log(`    ${dim('If ANY reviewer FAILs → back to Implementer → re-review')}`);
+  console.log('');
+  console.log(`    ${color('⚠', 'warning')}  ${dim('Agents open PRs and flag issues.')} ${bold('Only humans approve and merge.')}`);
 
-${color('Workflow (Review Loop):', 'magenta')}
-  You → Planner → Implementer → [Arch Reviewer → Security Reviewer → Reviewer] → Ship
-  (If ANY reviewer FAILs → back to Implementer → re-review until ALL PASS)
+  // ── Next steps (boxed) ──────────────────────────────────────
+  console.log('');
+  box([
+    `${bold(color('Next steps', 'primary'))}`,
+    '',
+    `${color('1.', 'secondary')} Review ${bold('AGENTS.md')} and customize for your project`,
+    `${color('2.', 'secondary')} Review ${bold('docs/ARCHITECTURE.md')} — ${archResult.discovered
+      ? `${archResult.layers.length} layers discovered`
+      : `generic presets for ${bold(config.lang)}`}`,
+    `${color('3.', 'secondary')} Review ${bold('docs/SECURITY.md')} and ${bold('docs/RELIABILITY.md')}`,
+    `${color('4.', 'secondary')} Open your IDE and try the ${bold('Planner')} agent`,
+    `${color('5.', 'secondary')} Run ${color('harness-lab doctor', 'secondary')} to check setup health`,
+    `${color('6.', 'secondary')} Run ${color('harness-lab enforce', 'secondary')} to validate architecture`,
+    '',
+    `${dim('Have existing docs?')} Drop them into ${color('docs/references/', 'secondary')}`,
+    `${dim('then run')} ${color('harness-lab ingest', 'secondary')}`,
+  ], { width: 62 });
 
-${color('Have existing docs? (PRD, architecture, requirements):', 'magenta')}
-  Drop them into ${color('docs/references/', 'cyan')} then run ${color('harness-lab ingest', 'cyan')}
-`);
+  console.log('');
 
   closeRL();
 }
