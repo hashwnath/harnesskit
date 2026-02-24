@@ -225,11 +225,13 @@ await doctor('/path/to/repo');
 
 ## Contributing
 
-1. Fork the repo
-2. Create a feature branch
-3. Add or update templates, generators, or commands
-4. Test: `node --test tests/`
-5. Submit a PR
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, code style, and PR process.
+
+## Acknowledgments
+
+**harnesskit** is an open-source implementation of the **[Harness Engineering](https://openai.com/index/harness-engineering/)** methodology published by **OpenAI** in 2025. The core principles — repository-as-source-of-truth, structured agent instructions, layered architecture enforcement, agent-to-agent review loops, and execution plans — originate from OpenAI's research on making AI coding agents effective at scale.
+
+This project adapts those principles into a universal, IDE-agnostic, language-agnostic CLI tool. It is not affiliated with, endorsed by, or sponsored by OpenAI.
 
 ## License
 

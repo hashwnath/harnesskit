@@ -192,62 +192,175 @@ Sleep 4s
 
 ## 8. Write a Medium Article (Long-form)
 
-### Suggested Title
-> **"I Built an Open-Source CLI That Sets Up Any Repo for AI Agent Development in 30 Seconds"**
-
-### Structure (~8–12 min read)
-
-```markdown
-# I Built an Open-Source CLI That Sets Up Any Repo for AI Agent Development in 30 Seconds
-
-## The Problem
-- OpenAI published "Harness Engineering" — a methodology for making AI coding
-  agents actually productive
-- The core ideas (structured knowledge, agent personas, architecture enforcement)
-  are brilliant — but there's no universal tool to set it up
-- Every team reinvents the wheel: custom AGENTS.md, scattered docs, no enforcement
-
-## What Is Harness Engineering?
-- Brief explainer (cite the OpenAI blog post)
-- Key principles: repo-as-truth, layered architecture, review loops, quality tracking
-- Why it works: agents perform 2–5x better when the repo has structured context
-
-## Introducing harnesskit
-- One command: `npx harnesskit init`
-- Zero dependencies, works with any language, any IDE, any git provider
-- [Embed demo GIF here]
-
-## What It Generates
-- Walk through each generated file with screenshots/code blocks:
-  - AGENTS.md — the universal agent instruction file
-  - docs/ARCHITECTURE.md — layer rules auto-discovered from your project
-  - Agent personas (Planner, Implementer, Reviewer, Security, Arch)
-  - MCP server configs
-  - CI enforcement (GitHub Actions / Azure Pipelines)
-  - Quality tracking, security posture, reliability docs
-
-## The Architecture Discovery Engine
-- How `harnesskit` scans your folder tree and samples imports
-- How it maps folders → layers → dependency rules
-- Before/after: generic presets vs. discovered architecture
-
-## The Review Loop
-- Explain the agent workflow: Plan → Implement → [Arch + Security + Reviewer] → Ship
-- Agents open PRs, flag issues — humans approve and merge
-- How `harnesskit enforce` catches architecture violations in CI
-
-## Getting Started
-- Step-by-step: `npx harnesskit init`, open IDE, try the Planner agent
-- Link to GitHub repo + npm package
-
-## What's Next
-- Roadmap: more languages, more IDEs, plugin system
-- Call for contributors
-- Link to GitHub issues
+Below is a full, publish-ready draft. Copy into Medium, add the demo GIF at the top, and publish.
 
 ---
-*If you found this useful, star the repo and share it with your team.*
+
+### Full Draft — Copy Below This Line
+
+---
+
+# I Built an Open-Source CLI That Sets Up Any Repo for AI Agent Development in 30 Seconds
+
+*An open-source implementation of OpenAI's Harness Engineering methodology — for any language, any IDE, any git provider.*
+
+<!-- [INSERT DEMO GIF HERE] -->
+
+## The Turning Point: OpenAI's Harness Engineering
+
+In 2025, OpenAI published something that quietly changed how serious teams think about AI-assisted development: **[Harness Engineering](https://openai.com/index/harness-engineering/)**.
+
+The idea was deceptively simple: AI coding agents don't fail because they're dumb — they fail because repos are unstructured. Give an agent a flat repo with no architecture docs, no clear conventions, and no layered knowledge, and it will hallucinate file structures, violate import boundaries, and produce code that technically runs but architecturally decays.
+
+Give that same agent a **harnessed** repo — one with structured knowledge (AGENTS.md, architecture docs, security posture), specialized agent personas (Planner, Implementer, Reviewer), and mechanical enforcement (layer rules validated in CI) — and suddenly, agents can build and ship real features.
+
+OpenAI proved this works. Their internal Codex agents, powered by this methodology, achieved dramatically better results when the repo was properly "harnessed."
+
+**But there was a catch: the tooling was deeply coupled to Codex.** The principles were universal. The implementation wasn't.
+
+## The Gap Nobody Filled
+
+After that blog post, the developer world adopted pieces of the pattern:
+- **60,000+ repos** now have an `AGENTS.md` file
+- Every major IDE — Copilot, Cursor, Claude Code, Windsurf — reads some form of agent instructions
+- Teams started writing architecture docs and review workflows
+
+But nobody packaged the **full orchestration layer**:
+- Structured docs/ with architecture rules, security posture, reliability targets, and quality grades
+- Specialized agent personas that hand off work in a defined flow
+- Mechanical enforcement that catches architecture violations in CI — not just linting, but *layer boundary validation*
+- Execution plans as first-class artifacts
+- A discovery engine that understands YOUR project's actual structure
+
+Every team was reinventing this wheel, one markdown file at a time.
+
+## Introducing harnesskit
+
+I built **harnesskit** to close that gap. One command:
+
+```bash
+npx harnesskit init
 ```
+
+That's it. Your repo is now set up for agent-first development.
+
+**Zero dependencies.** Pure Node.js built-ins. Works on Windows, macOS, Linux. No install step.
+
+It detects your language, your IDE, and your git provider automatically — then generates the complete Harness Engineering infrastructure adapted to your specific stack:
+
+<!-- [INSERT SCREENSHOT OF INIT OUTPUT WITH FILE TREE] -->
+
+### What Gets Generated
+
+| File | Purpose |
+|------|---------|
+| **AGENTS.md** | Universal agent instructions — the "table of contents" for every AI tool |
+| **docs/ARCHITECTURE.md** | Layer rules and dependency graphs — auto-discovered from your project |
+| **docs/SECURITY.md** | Security posture, data classification, auth patterns |
+| **docs/RELIABILITY.md** | Bootability, health checks, SLA targets |
+| **docs/QUALITY_SCORE.md** | Per-domain quality grades |
+| **docs/design-docs/** | Design decisions + core beliefs |
+| **docs/exec-plans/** | Execution plan templates (Plan → Implement → Review → Ship) |
+| **Agent configs** | Per-IDE: `.github/agents/`, `.cursor/rules/`, `.claude/`, etc. |
+| **MCP server configs** | Per-IDE — context7, sequential-thinking, GitHub |
+| **CI workflows** | `harnesskit enforce` + `harnesskit doctor` in GitHub Actions or Azure Pipelines |
+
+### The Architecture Discovery Engine
+
+This is the part I'm most proud of: **harnesskit doesn't just paste generic templates.** It scans your actual project.
+
+When you run `init`, the discovery engine:
+1. Walks your folder tree
+2. Identifies architectural layers (API, models, services, utils, config, etc.)
+3. Samples import/require statements from actual source files
+4. Maps real dependency flows between folders
+5. Generates architecture rules that match **your** code
+
+A Python FastAPI project gets different layer rules than a Node.js Express app or a Go microservice — because the engine *looked at the code*, not a preset.
+
+If it can't detect structure (flat project, or too early), it falls back to sensible language-specific presets and tells you to re-run after adding folders.
+
+### The Agent Review Loop
+
+harnesskit generates 6 specialized agent personas:
+
+```
+You → Planner → Implementer → [Arch Reviewer · Security Reviewer · Reviewer] → Ship
+```
+
+Each persona has a specific role:
+- **Planner** — breaks tasks into execution plans, creates branch strategy
+- **Implementer** — writes code following the architecture rules
+- **Arch Reviewer** — validates layer boundaries and dependency direction
+- **Security Reviewer** — checks auth, crypto, data handling
+- **Reviewer** — overall quality, test coverage, edge cases
+
+If ANY reviewer fails → the Implementer gets the feedback → re-implements → re-review. This loop continues until all three pass.
+
+**Critical rule**: Agents open PRs and flag issues. **Only humans approve and merge.** This isn't a technicality — it's a core principle from OpenAI's methodology, and harnesskit enforces it in the generated workflow instructions.
+
+### Mechanical Enforcement
+
+`harnesskit enforce` is a language-agnostic import boundary validator. It reads your `docs/ARCHITECTURE.md`, extracts the layer rules table, then scans every source file's imports to find violations.
+
+If `Routes` imports from `UI` and the architecture says that's forbidden — it fails. In CI. Before merge.
+
+This is what turns architecture docs from aspirational to structural.
+
+### What It Supports
+
+| Dimension | Options |
+|-----------|---------|
+| Languages | Node.js, Python, .NET, Java, Go, Rust, Other |
+| IDEs | VS Code + Copilot, Cursor, Claude Code, Windsurf, JetBrains, Codex CLI, Kiro, Antigravity, Gemini CLI |
+| Git | GitHub, Azure DevOps, GitLab, Bitbucket |
+| CI | GitHub Actions, Azure Pipelines |
+
+## Credit Where It's Due
+
+**harnesskit is an open-source implementation of [OpenAI's Harness Engineering](https://openai.com/index/harness-engineering/) methodology.** The core principles — repository-as-source-of-truth, structured agent instructions, layered architecture enforcement, agent-to-agent review loops, execution plans, and progressive disclosure — all originate from OpenAI's published research on making AI coding agents effective at real codebases.
+
+What harnesskit adds is the **universal packaging**: detecting your stack, generating adapted scaffolding, discovering your architecture, and working across every major IDE and git provider — not just Codex.
+
+This project is not affiliated with, endorsed by, or sponsored by OpenAI.
+
+## Getting Started
+
+```bash
+# Scaffold your repo
+npx harnesskit init
+
+# Check setup health
+npx harnesskit doctor
+
+# Validate architecture rules
+npx harnesskit enforce
+
+# Find stale docs
+npx harnesskit garden
+
+# Have reference docs? Auto-populate
+npx harnesskit ingest
+```
+
+The interactive wizard takes ~30 seconds. The `--yes` flag auto-detects everything.
+
+## What's Next
+
+- More language-specific presets (Elixir, PHP, Swift)
+- Plugin system for custom enforcers
+- `harnesskit upgrade` to update scaffolding without overwriting customizations
+- Dashboard / quality report generator
+
+Star the repo if this is useful: **[GitHub](https://github.com/YOUR_USERNAME/harnesskit)**
+
+Try it now: `npx harnesskit init`
+
+---
+
+*Built for the agent-first era. Humans steer. Agents execute. harnesskit sets up the environment.*
+
+---
 
 ### Publishing Tips
 - Add 5 tags: `AI`, `Developer Tools`, `Open Source`, `Software Engineering`, `Coding Agents`
@@ -265,42 +378,49 @@ Sleep 4s
 🚀 I just open-sourced harnesskit — a CLI that sets up any repo for AI agent
 development in 30 seconds.
 
-The problem:
-OpenAI showed that AI coding agents work 2–5x better when repos have structured
-context — AGENTS.md, architecture rules, review loops. But nobody packaged this
-into a universal tool.
+The backstory:
+In 2025, OpenAI published "Harness Engineering" — a methodology that showed AI
+coding agents perform dramatically better when repos have structured context:
+AGENTS.md, architecture rules, agent personas, review loops.
 
-The solution:
+The principles are brilliant. But the tooling was built for Codex.
+
+So I built harnesskit — an open-source implementation of those principles for
+EVERY language, EVERY IDE, EVERY git provider.
+
 npx harnesskit init
 
-One command. Zero dependencies. Works with:
-→ Any language (Node, Python, .NET, Java, Go, Rust)
-→ Any IDE (VS Code, Cursor, Claude Code, Windsurf, JetBrains)
-→ Any git provider (GitHub, Azure DevOps, GitLab, Bitbucket)
+One command. Zero dependencies. What it does:
+→ Auto-detects your language, IDE, git provider
+→ Scans your folder structure + imports to discover architecture
+→ Generates AGENTS.md, docs/, agent configs, MCP servers, CI workflows
 
-What it generates:
-✅ AGENTS.md — universal agent instructions
-✅ docs/ARCHITECTURE.md — auto-discovered layer rules
-✅ Agent personas — Planner, Implementer, Reviewer, Security
-✅ MCP server configs — per-IDE
-✅ CI enforcement — architecture validation in your pipeline
-✅ Quality tracking, security posture, reliability docs
+Works with:
+🔧 Node, Python, .NET, Java, Go, Rust
+🖥️ VS Code, Cursor, Claude Code, Windsurf, JetBrains, Gemini CLI
+🔀 GitHub, Azure DevOps, GitLab, Bitbucket
 
-The magic: it SCANS your actual project structure, samples your imports, and
-generates architecture rules that match YOUR code — not generic templates.
+The magic: it doesn't paste templates. It READS your project structure, samples
+your imports, and generates architecture rules that match YOUR code.
 
-Built with zero dependencies. Pure Node.js. MIT licensed.
+Then `harnesskit enforce` validates those rules in CI — mechanical enforcement,
+not just documentation.
+
+Credit: The core methodology (repo-as-truth, layered enforcement, agent review
+loops, execution plans) comes from OpenAI's Harness Engineering research. This
+tool packages those principles into a universal CLI.
+
+Not affiliated with OpenAI — just inspired by their work.
 
 Try it: npx harnesskit init
 GitHub: [LINK]
 npm: https://www.npmjs.com/package/harnesskit
 
-If you work with AI coding agents — Copilot, Claude Code, Cursor, Codex — this
-is the scaffolding layer you're missing.
+MIT licensed. Zero dependencies. Pure Node.js.
 
-Star it if it's useful ⭐
+⭐ Star if it's useful.
 
-#OpenSource #AI #DeveloperTools #SoftwareEngineering #CodingAgents
+#OpenSource #AI #DeveloperTools #HarnessEngineering #CodingAgents
 ```
 
 ### LinkedIn Tips
