@@ -1,0 +1,38 @@
+# Core Beliefs — Agent-First Operating Principles
+
+These beliefs guide how we build and maintain my-project. They apply to both human and agent contributors.
+
+## 1. Repository Is the Source of Truth
+- Everything the agent needs must live **in the repo**
+- If a decision was made in a meeting/chat/email, it doesn't exist until documented here
+- No tribal knowledge — encode it or lose it
+
+## 2. Give the Agent a Map, Not a Manual
+- `AGENTS.md` is a table of contents, not an encyclopedia
+- Keep instructions short; point to deeper docs
+- Progressive disclosure: metadata → instructions → reference files
+
+## 3. Parse, Don't Validate
+- Validate all inputs at boundaries
+- Type all outputs from services
+- Don't probe data "YOLO-style"
+
+## 4. Enforce Invariants, Not Implementations
+- Architecture rules are enforced mechanically (linters, `harnesskit enforce`)
+- Within those boundaries, the agent has freedom in how solutions are expressed
+
+## 5. Shared Utilities Over Hand-Rolled Helpers
+- Prefer shared modules over duplicating logic
+- Keep invariants centralized
+
+## 6. Documentation Rots — Fight Entropy
+- Docs must be mechanically verifiable where possible
+- Run `harnesskit garden` regularly to catch drift
+
+## 7. Corrections Are Cheap, Waiting Is Expensive
+- Ship small, iterate fast
+- Fix-up PRs are normal, not failures
+
+## 8. Human Taste Is Fed Back as Code
+- Review feedback → documentation update → linter rule
+- Promote patterns into enforceable rules

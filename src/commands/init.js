@@ -116,14 +116,14 @@ export async function init(targetDir, flags) {
   let layerDiagram, layerRules;
   if (archResult.discovered) {
     layerDiagram = archResult.diagram;
-    layerRules   = archResult.rules;
+    layerRules = archResult.rules;
     info(`Discovered ${archResult.layers.length} layers: ${archResult.layers.map(l => l.folder).join(', ')}`);
     if (archResult.unmapped.length) {
       info(`Unmapped folders (kept as-is): ${archResult.unmapped.join(', ')}`);
     }
   } else {
     layerDiagram = preset.diagram;
-    layerRules   = generateLayerRules(config.lang);
+    layerRules = generateLayerRules(config.lang);
     info('No layered structure detected — using generic layer presets.');
   }
 
@@ -140,6 +140,7 @@ export async function init(targetDir, flags) {
   // 1. Knowledge base (docs/)
   step('docs/ knowledge base');
   generate('docs/ARCHITECTURE.md.tmpl', join(targetDir, 'docs', 'ARCHITECTURE.md'), ctx);
+  generate('docs/BRAIN.html.tmpl', join(targetDir, 'docs', 'BRAIN.html'), ctx);
   generate('docs/QUALITY_SCORE.md.tmpl', join(targetDir, 'docs', 'QUALITY_SCORE.md'), ctx);
   generate('docs/SECURITY.md.tmpl', join(targetDir, 'docs', 'SECURITY.md'), ctx);
   generate('docs/RELIABILITY.md.tmpl', join(targetDir, 'docs', 'RELIABILITY.md'), ctx);
@@ -182,20 +183,21 @@ export async function init(targetDir, flags) {
   console.log('');
 
   const createdItems = [
-    { label: 'AGENTS.md',                 detail: 'universal agent instructions' },
-    { label: 'docs/ARCHITECTURE.md',      detail: 'layer rules & dependency graph' },
-    { label: 'docs/QUALITY_SCORE.md',     detail: 'per-domain quality grades' },
-    { label: 'docs/SECURITY.md',          detail: 'security posture & data classification' },
-    { label: 'docs/RELIABILITY.md',       detail: 'bootability, health checks & SLAs' },
-    { label: 'docs/design-docs/',         detail: 'decisions + core-beliefs' },
-    { label: 'docs/exec-plans/',          detail: 'execution plan templates' },
-    { label: `Agent configs`,             detail: config.ides.join(', ') },
-    { label: 'MCP server configs',        detail: 'per-IDE connections' },
-    { label: '.env.example',              detail: 'required tokens & keys' },
-    { label: '.vscode/',                  detail: 'settings + recommended extensions' },
+    { label: 'AGENTS.md', detail: 'universal agent instructions' },
+    { label: 'docs/ARCHITECTURE.md', detail: 'layer rules & dependency graph' },
+    { label: 'docs/BRAIN.html', detail: 'interactive agent knowledge graph' },
+    { label: 'docs/QUALITY_SCORE.md', detail: 'per-domain quality grades' },
+    { label: 'docs/SECURITY.md', detail: 'security posture & data classification' },
+    { label: 'docs/RELIABILITY.md', detail: 'bootability, health checks & SLAs' },
+    { label: 'docs/design-docs/', detail: 'decisions + core-beliefs' },
+    { label: 'docs/exec-plans/', detail: 'execution plan templates' },
+    { label: `Agent configs`, detail: config.ides.join(', ') },
+    { label: 'MCP server configs', detail: 'per-IDE connections' },
+    { label: '.env.example', detail: 'required tokens & keys' },
+    { label: '.vscode/', detail: 'settings + recommended extensions' },
   ];
-  if (config.git === 'github')  createdItems.push({ label: '.github/workflows/', detail: 'CI enforcement' });
-  if (config.git === 'ado')     createdItems.push({ label: 'azure-pipelines.yml', detail: 'CI enforcement' });
+  if (config.git === 'github') createdItems.push({ label: '.github/workflows/', detail: 'CI enforcement' });
+  if (config.git === 'ado') createdItems.push({ label: 'azure-pipelines.yml', detail: 'CI enforcement' });
   printTree(createdItems);
 
   // ── Active MCP servers ──────────────────────────────────────

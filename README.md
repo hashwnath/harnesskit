@@ -34,42 +34,47 @@ OpenAI showed that with the right *scaffolding*, AI agents can build and ship re
 
 ## How It Works
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  npx harnesskit init                                           │
-│                                                                 │
-│  Detects: language, IDE, git provider                           │
-│  Generates: AGENTS.md + docs/ + agents + skills + enforcement   │
-│  Adapts to: VS Code, Cursor, Claude Code, Windsurf, JetBrains  │
-└─────────────────────────────────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  YOUR REPO (any language, any IDE)                              │
-│                                                                 │
-│  AGENTS.md ............... Universal agent instructions          │
-│  docs/ARCHITECTURE.md .... Layer rules + dependency diagram     │
-│  docs/QUALITY_SCORE.md ... Per-domain quality grades            │
-│  docs/exec-plans/ ........ Execution plan templates             │
-│  docs/design-docs/ ....... Core beliefs + design decisions      │
-│                                                                 │
-│  .github/agents/ ......... VS Code custom agents                │
-│  .cursor/rules/ .......... Cursor rules                         │
-│  .claude/agents/ ......... Claude Code subagents                │
-│  .windsurf/rules/ ........ Windsurf rules                       │
-│  .junie/guidelines.md .... JetBrains Junie                      │
-└─────────────────────────────────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  THE WORKFLOW                                                   │
-│                                                                 │
-│  You → Planner → [review] → Implementer → Reviewer → Ship      │
-│                                                                 │
-│  harnesskit enforce ... validate architecture rules            │
-│  harnesskit doctor .... check setup health                     │
-│  harnesskit garden .... find stale docs & broken refs          │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    %% Setup Phase
+    Init[<code>npx harnesskit init</code>] -->|Detects Stack| GenEnv
+    
+    subgraph "Scaffolded Knowledge & Rules"
+        GenEnv[Generates Infrastructure] --> AgentsMD[AGENTS.md]
+        GenEnv --> Rules[Layered Arch Rules<br/>Quality Scores]
+        GenEnv --> Configs[IDE configs<br/>VS Code, Cursor, etc.]
+    end
+
+    %% Development Phase
+    User[Developer] -->|Prompts| Planner
+    
+    subgraph "The Agent Workflow"
+        Planner[Planner Agent] -->|Reads Context| Rules
+        Planner -->|Creates Plan| ExecPlans[docs/exec-plans]
+        
+        ExecPlans -->|Handoff| Implementer[Implementer Agent]
+        Implementer -->|Writes Code| Code[Codebase]
+        
+        Code -->|Triggers| Reviews
+        
+        subgraph "Review & Enforcement"
+            Reviews[Sub-agents] -.->|PR/Review| ArchReview[Arch Reviewer]
+            Reviews -.->|PR/Review| SecReview[Security Reviewer]
+            
+            ArchReview -.->|Checks| Rules
+            SecReview -.->|Checks| Rules
+
+            ArchReview -->|Fails| Implementer
+            SecReview -->|Fails| Implementer
+        end
+        
+        Reviews -->|All Pass| Ship[Ship it! 🚀]
+    end
+
+    %% Styles
+    style Init fill:#3b82f6,stroke:#2563eb,color:#fff
+    style Ship fill:#10b981,stroke:#059669,color:#fff
+    style Code fill:#64748b,stroke:#475569,color:#fff
 ```
 
 ## Quick Start
