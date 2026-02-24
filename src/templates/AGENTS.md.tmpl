@@ -34,7 +34,7 @@
 
 - **No upward imports** — lower layers must not import from higher layers.
 - Cross-cutting concerns enter through the provider/shared layer.
-- Enforced by `harness-lab enforce` or `scripts/check-architecture.*`
+- Enforced by `harnesskit enforce` or `scripts/check-architecture.*`
 
 ## Review Loop (Peer Agent Reviews)
 
@@ -57,7 +57,7 @@ Each reviewer produces a PASS/FAIL report. The Implementer iterates until all pa
 
 Already have PRDs, architecture docs, or requirement specs?
 1. Drop them into `docs/references/`
-2. Run `harness-lab ingest`
+2. Run `harnesskit ingest`
 3. Paste the generated instruction into your coding agent
 4. The agent auto-populates all source-of-truth files
 
@@ -72,7 +72,7 @@ Every change follows this flow — whether driven by a human or an AI agent:
 | 3. Self-check | Implementer agent | Run build + test + lint locally before committing |
 | 4. Open PR | Implementer agent (or human) | Push branch, open PR with exec-plan link in description |
 | 5. Review loop | Arch → Security → Reviewer | Each reviewer agent checks their domain; ANY fail → back to step 2 |
-| 6. CI gate | Automated | `harness-lab enforce` + `harness-lab doctor` must pass in CI |
+| 6. CI gate | Automated | `harnesskit enforce` + `harnesskit doctor` must pass in CI |
 | 7. Merge | Human | A human reviews and merges — per OpenAI: "users must manually review and validate all agent-generated code" |
 | 8. Post-merge | Doc-Gardener agent | Updates QUALITY_SCORE.md, checks doc links |
 
@@ -97,8 +97,8 @@ Every change follows this flow — whether driven by a human or an AI agent:
 
 When CI runs on a PR, the following checks execute automatically:
 
-1. `harness-lab enforce` — validates architecture layer rules
-2. `harness-lab doctor` — checks scaffold health & completeness
+1. `harnesskit enforce` — validates architecture layer rules
+2. `harnesskit doctor` — checks scaffold health & completeness
 3. Standard build / test / lint pipeline
 
 If any check fails, the agent reads the CI output and self-corrects:

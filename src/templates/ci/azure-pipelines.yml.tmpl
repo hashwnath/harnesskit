@@ -18,11 +18,11 @@ steps:
     inputs:
       versionSpec: '20.x'
 
-  - script: npx harness-lab@latest enforce
+  - script: npx harnesskit@latest enforce
     displayName: 'Architecture Enforcement'
 
-  - script: npx harness-lab@latest doctor
+  - script: npx harnesskit@latest doctor
     displayName: 'Doc Health Check'
 
-  - script: npx harness-lab@latest garden
+  - script: npx harnesskit@latest garden
     displayName: 'Doc Garden (link check)'

@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * harness-lab CLI
+ * harnesskit CLI
  *
  * Usage:
- *   npx harness-lab init          Interactive setup wizard
- *   npx harness-lab init --yes    Accept all defaults
- *   npx harness-lab enforce       Run architecture enforcement checks
- *   npx harness-lab doctor        Validate harness setup completeness
- *   npx harness-lab garden        Run doc-gardener checks
- *   npx harness-lab ingest        Auto-populate SoT from docs/references/
+ *   npx harnesskit init          Interactive setup wizard
+ *   npx harnesskit init --yes    Accept all defaults
+ *   npx harnesskit enforce       Run architecture enforcement checks
+ *   npx harnesskit doctor        Validate harness setup completeness
+ *   npx harnesskit garden        Run doc-gardener checks
+ *   npx harnesskit ingest        Auto-populate SoT from docs/references/
  */
 
 import { parseArgs } from 'node:util';

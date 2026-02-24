@@ -1,5 +1,5 @@
 /**
- * `harness-lab enforce` command.
+ * `harnesskit enforce` command.
  * Language-agnostic architecture enforcement via import/dependency scanning.
  */
 
@@ -17,7 +17,7 @@ export async function enforce(targetDir) {
   // Try to load layer rules from docs/ARCHITECTURE.md
   const archPath = join(targetDir, 'docs', 'ARCHITECTURE.md');
   if (!existsSync(archPath)) {
-    fail('docs/ARCHITECTURE.md not found. Run `harness-lab init` first.');
+    fail('docs/ARCHITECTURE.md not found. Run `harnesskit init` first.');
     process.exit(1);
   }
 

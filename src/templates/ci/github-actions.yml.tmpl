@@ -17,10 +17,10 @@ jobs:
           node-version: '20'
 
       - name: Architecture Enforcement
-        run: npx harness-lab@latest enforce
+        run: npx harnesskit@latest enforce
 
       - name: Doc Health Check
-        run: npx harness-lab@latest doctor
+        run: npx harnesskit@latest doctor
 
       - name: Doc Garden (link check)
-        run: npx harness-lab@latest garden
+        run: npx harnesskit@latest garden

@@ -1,10 +1,10 @@
 {
-  "name": "harness-lab",
+  "name": "harnesskit",
   "version": "0.1.0",
   "description": "Plug-and-play SDK to set up Harness Engineering (agent-first development) in any repo, any IDE, any git provider",
   "type": "module",
   "bin": {
-    "harness-lab": "./bin/cli.js"
+    "harnesskit": "./bin/cli.js"
   },
   "main": "src/index.js",
   "exports": {

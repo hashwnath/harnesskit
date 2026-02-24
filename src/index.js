@@ -1,5 +1,5 @@
 /**
- * harness-lab SDK — public API.
+ * harnesskit SDK — public API.
  * Can be imported as a library for programmatic use.
  */
 

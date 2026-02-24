@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ harness-lab
+# ⚡ harnesskit
 
 **Plug-and-play SDK for Harness Engineering — agent-first development in any repo, any IDE, any git provider.**
 
@@ -14,10 +14,10 @@
 
 ## What Is This?
 
-**harness-lab** implements the [Harness Engineering](https://openai.com/index/harness-engineering/) workflow as a **universal, pluggable SDK**. One command scaffolds the complete agent-first development infrastructure — structured knowledge base, specialized agent personas, architecture enforcement, execution plans, and quality tracking — adapted to **your** language, IDE, and git provider.
+**harnesskit** implements the [Harness Engineering](https://openai.com/index/harness-engineering/) workflow as a **universal, pluggable SDK**. One command scaffolds the complete agent-first development infrastructure — structured knowledge base, specialized agent personas, architecture enforcement, execution plans, and quality tracking — adapted to **your** language, IDE, and git provider.
 
 ```bash
-npx harness-lab init
+npx harnesskit init
 ```
 
 That's it. Your repo is now set up for agent-first development.
@@ -30,13 +30,13 @@ OpenAI showed that with the right *scaffolding*, AI agents can build and ship re
 - **Agent Skills** give agents reusable capabilities (adopted by every major tool)
 - But **nobody has packaged the full orchestration layer**: execution plans, quality grades, architecture enforcement, agent-to-agent review loops, doc gardening
 
-**harness-lab** is that missing layer.
+**harnesskit** is that missing layer.
 
 ## How It Works
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  npx harness-lab init                                           │
+│  npx harnesskit init                                           │
 │                                                                 │
 │  Detects: language, IDE, git provider                           │
 │  Generates: AGENTS.md + docs/ + agents + skills + enforcement   │
@@ -66,9 +66,9 @@ OpenAI showed that with the right *scaffolding*, AI agents can build and ship re
 │                                                                 │
 │  You → Planner → [review] → Implementer → Reviewer → Ship      │
 │                                                                 │
-│  harness-lab enforce ... validate architecture rules            │
-│  harness-lab doctor .... check setup health                     │
-│  harness-lab garden .... find stale docs & broken refs          │
+│  harnesskit enforce ... validate architecture rules            │
+│  harnesskit doctor .... check setup health                     │
+│  harnesskit garden .... find stale docs & broken refs          │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -78,20 +78,20 @@ OpenAI showed that with the right *scaffolding*, AI agents can build and ship re
 ```bash
 mkdir my-project && cd my-project
 git init
-npx harness-lab init
+npx harnesskit init
 ```
 
 ### Existing Project
 ```bash
 cd my-existing-repo
-npx harness-lab init          # Interactive wizard
+npx harnesskit init          # Interactive wizard
 # or
-npx harness-lab init --yes    # Auto-detect everything
+npx harnesskit init --yes    # Auto-detect everything
 ```
 
 ### Specify Your Stack
 ```bash
-npx harness-lab init --lang python --ide cursor,vscode --git ado
+npx harnesskit init --lang python --ide cursor,vscode --git ado
 ```
 
 ## Supported Environments
@@ -129,11 +129,11 @@ npx harness-lab init --lang python --ide cursor,vscode --git ado
 
 | Command | What It Does |
 |---------|-------------|
-| `harness-lab init` | Interactive setup wizard |
-| `harness-lab init --yes` | Non-interactive, auto-detect everything |
-| `harness-lab enforce` | Validate architecture layer rules |
-| `harness-lab doctor` | Check setup health and completeness |
-| `harness-lab garden` | Find stale docs, broken refs, completed plans |
+| `harnesskit init` | Interactive setup wizard |
+| `harnesskit init --yes` | Non-interactive, auto-detect everything |
+| `harnesskit enforce` | Validate architecture layer rules |
+| `harnesskit doctor` | Check setup health and completeness |
+| `harnesskit garden` | Find stale docs, broken refs, completed plans |
 
 ## What Gets Generated
 
@@ -198,7 +198,7 @@ You (human intent)
 ## Programmatic API
 
 ```javascript
-import { init, enforce, doctor, garden, generateAgents } from 'harness-lab';
+import { init, enforce, doctor, garden, generateAgents } from 'harnesskit';
 
 // Generate harness scaffold programmatically
 await init('/path/to/repo', { yes: true, lang: 'python', ide: 'cursor,vscode' });
@@ -212,14 +212,14 @@ await doctor('/path/to/repo');
 
 ## Mapping to OpenAI's Harness Engineering
 
-| Harness Principle | harness-lab Implementation |
+| Harness Principle | harnesskit Implementation |
 |---|---|
 | AGENTS.md as table of contents | Auto-generated `AGENTS.md` (~50 lines, links to docs/) |
 | Structured docs/ knowledge base | `docs/` — ARCHITECTURE, QUALITY_SCORE, exec-plans, core-beliefs |
-| Layered architecture enforcement | `harness-lab enforce` — language-agnostic import scanner |
+| Layered architecture enforcement | `harnesskit enforce` — language-agnostic import scanner |
 | Agent-to-agent review loop | Planner → Implementer → Reviewer handoff agents |
 | Execution plans as first-class artifacts | `docs/exec-plans/active/` with templates |
-| Garbage collection / doc gardening | `harness-lab garden` + Doc Gardener agent |
+| Garbage collection / doc gardening | `harnesskit garden` + Doc Gardener agent |
 | Progressive disclosure | AGENTS.md → docs/ → IDE-specific instructions |
 | Corrections are cheap | Non-blocking flow, fix-up PRs encouraged |
 
@@ -241,6 +241,6 @@ MIT — see [LICENSE](LICENSE).
 
 **Built for the agent-first era.**
 
-*Humans steer. Agents execute. harness-lab sets up the environment.*
+*Humans steer. Agents execute. harnesskit sets up the environment.*
 
 </div>

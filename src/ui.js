@@ -98,7 +98,7 @@ export function printBanner() {
   }
   console.log('');
   console.log(
-    `  ${BRAND.primary}${BOLD}harness-lab${RESET}  ` +
+    `  ${BRAND.primary}${BOLD}harnesskit${RESET}  ` +
     `${BRAND.muted}v0.1.0${RESET}  ` +
     `${dim('│')}  ` +
     `${BRAND.surface}Agent-first scaffolding for any repo${RESET}`
@@ -194,7 +194,7 @@ export function divider(width = 50) {
 /* ── Help screen ──────────────────────────────────────────────── */
 export function printHelp() {
   console.log(`  ${BOLD}USAGE${RESET}`);
-  console.log(`    ${BRAND.secondary}npx harness-lab${RESET} ${BRAND.primary}<command>${RESET} ${dim('[options]')}`);
+  console.log(`    ${BRAND.secondary}npx harnesskit${RESET} ${BRAND.primary}<command>${RESET} ${dim('[options]')}`);
   console.log('');
 
   console.log(`  ${BOLD}COMMANDS${RESET}`);
@@ -227,11 +227,11 @@ export function printHelp() {
 
   console.log(`  ${BOLD}EXAMPLES${RESET}`);
   const examples = [
-    'npx harness-lab init',
-    'npx harness-lab init --yes',
-    'npx harness-lab init --lang node --ide vscode',
-    'npx harness-lab enforce',
-    'npx harness-lab doctor',
+    'npx harnesskit init',
+    'npx harnesskit init --yes',
+    'npx harnesskit init --lang node --ide vscode',
+    'npx harnesskit enforce',
+    'npx harnesskit doctor',
   ];
   for (const ex of examples) {
     console.log(`    ${dim('$')} ${BRAND.muted}${ex}${RESET}`);

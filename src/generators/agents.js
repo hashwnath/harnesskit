@@ -70,7 +70,7 @@ function genVSCode(targetDir, ctx) {
     const w = writeFile(join(targetDir, '.github', 'agents', `${name}.agent.md`), content);
     if (w) step(`.github/agents/${name}.agent.md`);
   }
-  const instr = `# ${ctx.projectName} — Copilot Instructions\n\n## Tech Stack\nLanguage: ${ctx.lang}\n\n## Build & Validate\n\`\`\`bash\n${ctx.buildCmd}\n${ctx.testCmd}\n${ctx.lintCmd}\n${ctx.startCmd}\n\`\`\`\n\n## Architecture\nSee docs/ARCHITECTURE.md. Run \`harness-lab enforce\` to validate.\n\n## Conventions\n- Parse at boundaries\n- Cross-cutting through shared/provider layer only\n- Every new function needs tests\n- Update docs/QUALITY_SCORE.md when quality changes\n`;
+  const instr = `# ${ctx.projectName} — Copilot Instructions\n\n## Tech Stack\nLanguage: ${ctx.lang}\n\n## Build & Validate\n\`\`\`bash\n${ctx.buildCmd}\n${ctx.testCmd}\n${ctx.lintCmd}\n${ctx.startCmd}\n\`\`\`\n\n## Architecture\nSee docs/ARCHITECTURE.md. Run \`harnesskit enforce\` to validate.\n\n## Conventions\n- Parse at boundaries\n- Cross-cutting through shared/provider layer only\n- Every new function needs tests\n- Update docs/QUALITY_SCORE.md when quality changes\n`;
   const w = writeFile(join(targetDir, '.github', 'copilot-instructions.md'), instr);
   if (w) step('.github/copilot-instructions.md');
 }

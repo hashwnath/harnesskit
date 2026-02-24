@@ -1,5 +1,5 @@
 /**
- * `harness-lab garden` command.
+ * `harnesskit garden` command.
  * Doc-gardener: finds stale references, broken links, completed plans.
  */
 

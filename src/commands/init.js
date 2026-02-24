@@ -1,5 +1,5 @@
 /**
- * `harness-lab init` command.
+ * `harnesskit init` command.
  * Interactive wizard or --yes for auto-detect mode.
  */
 
@@ -39,7 +39,7 @@ export async function init(targetDir, flags) {
     // Non-interactive: use detected values + flag overrides
     config = {
       projectName: flags.name || detectedName,
-      projectDescription: 'An agent-first project powered by harness-lab',
+      projectDescription: 'An agent-first project powered by harnesskit',
       lang: flags.lang || detected.lang,
       ides: flags.ide ? flags.ide.split(',') : detectedIDEs.length > 0 ? detectedIDEs : ['vscode'],
       git: flags.git || detectedGit,
@@ -241,11 +241,11 @@ export async function init(targetDir, flags) {
       : `generic presets for ${bold(config.lang)}`}`,
     `${color('3.', 'secondary')} Review ${bold('docs/SECURITY.md')} and ${bold('docs/RELIABILITY.md')}`,
     `${color('4.', 'secondary')} Open your IDE and try the ${bold('Planner')} agent`,
-    `${color('5.', 'secondary')} Run ${color('harness-lab doctor', 'secondary')} to check setup health`,
-    `${color('6.', 'secondary')} Run ${color('harness-lab enforce', 'secondary')} to validate architecture`,
+    `${color('5.', 'secondary')} Run ${color('harnesskit doctor', 'secondary')} to check setup health`,
+    `${color('6.', 'secondary')} Run ${color('harnesskit enforce', 'secondary')} to validate architecture`,
     '',
     `${dim('Have existing docs?')} Drop them into ${color('docs/references/', 'secondary')}`,
-    `${dim('then run')} ${color('harness-lab ingest', 'secondary')}`,
+    `${dim('then run')} ${color('harnesskit ingest', 'secondary')}`,
   ], { width: 62 });
 
   console.log('');

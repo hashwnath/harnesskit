@@ -24,7 +24,7 @@ You do NOT fix code — you flag issues and hand off.
 ## Review Checklist
 
 ### 1. Layer Violation Scan
-- Run `{{packageRunner}} harness-lab enforce` and report results
+- Run `{{packageRunner}} harnesskit enforce` and report results
 - Manually verify no upward imports (e.g., `routes/` importing from `routes/`)
 - Cross-cutting concerns flow through `shared/` or `common/` only
 

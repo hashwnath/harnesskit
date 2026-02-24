@@ -1,5 +1,5 @@
 /**
- * `harness-lab doctor` command.
+ * `harnesskit doctor` command.
  * Validates that the harness setup is complete and healthy.
  */
 
@@ -74,7 +74,7 @@ export async function doctor(targetDir) {
   if (failed === 0) {
     step(bold(color('Harness setup is healthy!', 'green')));
   } else {
-    fail(bold(color(`${failed} required file(s) missing. Run \`harness-lab init\` to fix.`, 'red')));
+    fail(bold(color(`${failed} required file(s) missing. Run \`harnesskit init\` to fix.`, 'red')));
     process.exit(1);
   }
 }

@@ -148,7 +148,7 @@ export function detectGitProvider(dir) {
 }
 
 /**
- * Detect existing harness-lab artifacts.
+ * Detect existing harnesskit artifacts.
  * @param {string} dir
  * @returns {{ hasAgentsMd: boolean, hasDocs: boolean, hasSkills: boolean, hasInstructions: boolean, hasExecPlans: boolean, hasQualityScore: boolean, hasArchitecture: boolean }}
  */

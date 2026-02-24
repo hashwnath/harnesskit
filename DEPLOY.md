@@ -1,6 +1,6 @@
-# Deployment Instructions — `harness-lab`
+# Deployment Instructions — `harnesskit`
 
-> **For the deploying agent / human**: Follow these steps to publish `harness-lab` from a **personal GitHub account** to npm. No org account required.
+> **For the deploying agent / human**: Follow these steps to publish `harnesskit` from a **personal GitHub account** to npm. No org account required.
 
 ---
 
@@ -30,7 +30,7 @@ The `repository.url` field is intentionally left empty. Set it to your personal 
 ```json
 "repository": {
   "type": "git",
-  "url": "https://github.com/YOUR_USERNAME/harness-lab"
+  "url": "https://github.com/YOUR_USERNAME/harnesskit"
 }
 ```
 
@@ -40,12 +40,12 @@ The `repository.url` field is intentionally left empty. Set it to your personal 
 
 ```bash
 # Option A — GitHub CLI
-gh repo create YOUR_USERNAME/harness-lab --public --source=. --remote=origin --push
+gh repo create YOUR_USERNAME/harnesskit --public --source=. --remote=origin --push
 
 # Option B — Manual
-# 1. Create repo at https://github.com/new  →  Name: harness-lab  →  Public  →  No template
+# 1. Create repo at https://github.com/new  →  Name: harnesskit  →  Public  →  No template
 # 2. Then:
-git remote add origin https://github.com/YOUR_USERNAME/harness-lab.git
+git remote add origin https://github.com/YOUR_USERNAME/harnesskit.git
 git push -u origin master
 ```
 
@@ -67,7 +67,7 @@ npm publish --access public
 After publishing, anyone in the world can run:
 
 ```bash
-npx harness-lab init
+npx harnesskit init
 ```
 
 ---
@@ -122,7 +122,7 @@ Then add your npm access token as a repository secret named `NPM_TOKEN`:
 
 | Path | Purpose |
 |------|---------|
-| `bin/cli.js` | CLI entry point (`npx harness-lab init`) |
+| `bin/cli.js` | CLI entry point (`npx harnesskit init`) |
 | `src/` | Core SDK — detect, discover, generate, enforce |
 | `src/templates/` | `.tmpl` files rendered into target repos |
 | `README.md` | User-facing docs |
@@ -134,7 +134,7 @@ The `files` field in `package.json` controls what ships to npm. Only `bin/`, `sr
 
 ## Important Notes
 
-- **Package name**: `harness-lab` (not `harness-lab-sdk` — the folder name doesn't matter)
+- **Package name**: `harnesskit` (not `harnesskit-sdk` — the folder name doesn't matter)
 - **Zero dependencies**: No `npm install` needed; uses only Node.js built-ins
 - **Requires**: Node.js >= 18 (for `node:util parseArgs`, `node:fs/promises`, etc.)
 - **License**: MIT — authored by Hashwanth Sutharapu
