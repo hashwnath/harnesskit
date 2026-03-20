@@ -1,6 +1,6 @@
 {
   "name": "harnesskit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Plug-and-play SDK to set up Harness Engineering (agent-first development) in any repo, any IDE, any git provider",
   "type": "module",
   "bin": {
