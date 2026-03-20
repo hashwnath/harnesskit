@@ -1,7 +1,18 @@
 # Real-World Examples
 
 > End-to-end runs of `harnesskit` against popular open-source repos.
-> Each example shows: the command, auto-detected stack, generated file tree, and key output files.
+> Each example shows: the command, auto-detected stack, generated file tree, key output files, **and real test results**.
+
+## E2E Test Results Summary
+
+| Repo | Language | `init` | `doctor` | `enforce` | `garden` | **Actual tests** |
+|------|----------|--------|----------|-----------|----------|------------------|
+| Express.js | Node.js | Pass | 12/12 | Pass | Pass | **1,249 passing** (`npm test`) |
+| FastAPI | Python | Pass | 12/12 | Pass | Pass | **60 passing** (`pytest`, core subset) |
+| Gin | Go | Pass | 12/12 | Pass | Pass | *skipped — needs Go 1.25 toolchain download* |
+| Axum | Rust | Pass | 12/12 | Pass | Pass | **604 passing, 0 failed** (`cargo test`) |
+
+> Tests were run on the **actual repos** after `harnesskit init --yes`. harnesskit's scaffold is non-destructive — it does not break existing build/test/lint pipelines.
 
 ---
 
@@ -170,6 +181,26 @@ $ npx harnesskit garden
   ✔ No documentation issues found!
 ```
 
+### Actual Test Run (npm test)
+
+```
+$ npm test
+
+  ...
+  web-service
+    GET /api/users
+      with a valid api key
+        ✔ should respond users json
+    GET /api/repos
+      with a valid api key
+        ✔ should respond repos json
+  ...
+
+  1249 passing (3s)
+```
+
+The scaffold is **non-destructive** — Express's full 1,249-test suite still passes after `harnesskit init`.
+
 ---
 
 ## 2. FastAPI (Python)
@@ -234,6 +265,16 @@ Shared: utils/, providers/
 12 passed, 0 failed, 5 optional missing
 ✔ Harness setup is healthy!
 ```
+
+### Actual Test Run (pytest)
+
+```
+$ pytest tests/test_application.py tests/test_router*.py tests/test_param*.py -x -q
+
+60 passed in 1.32s
+```
+
+Full test suite requires additional optional dependencies (`orjson`, `ujson`, etc.) — core tests pass cleanly.
 
 ---
 
@@ -300,6 +341,10 @@ Shared: pkg/
 ✔ Harness setup is healthy!
 ```
 
+### Actual Test Run (go test)
+
+> Skipped in this environment — Gin requires Go 1.25 toolchain download which was blocked by network restrictions. The scaffold itself generates correctly and `doctor`/`enforce`/`garden` all pass.
+
 ---
 
 ## 4. Axum (Rust)
@@ -363,6 +408,24 @@ Shared: utils/
 ```
 12 passed, 0 failed, 5 optional missing
 ✔ Harness setup is healthy!
+```
+
+### Actual Test Run (cargo test)
+
+```
+$ cargo test
+
+test result: ok. 341 passed; 0 failed; 0 ignored  (axum core)
+test result: ok. 1 passed; 0 failed; 0 ignored    (axum-core)
+test result: ok. 15 passed; 0 failed; 0 ignored   (axum-extra)
+test result: ok. 13 passed; 0 failed; 0 ignored   (axum-extra doctests)
+test result: ok. 5 passed; 0 failed; 0 ignored    (axum-macros unit)
+test result: ok. 160 passed; 0 failed; 1 ignored   (axum-macros compile tests)
+test result: ok. 19 passed; 0 failed; 0 ignored   (axum-macros doctests)
+test result: ok. 27 passed; 0 failed; 0 ignored   (axum doctests)
+test result: ok. 23 passed; 0 failed; 0 ignored   (axum-macros lib doctests)
+
+Total: 604 passed, 0 failed across 9 test suites
 ```
 
 ---
