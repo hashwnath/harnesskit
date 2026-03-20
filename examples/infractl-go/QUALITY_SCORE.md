@@ -1,4 +1,4 @@
-# Quality Score — axum
+# Quality Score — infractl
 
 > Updated: 2026-03-20
 > Grading: A (excellent) → F (missing/broken)

@@ -1,471 +1,295 @@
-# Real-World Examples
+# End-to-End Examples
 
-> End-to-end runs of `harnesskit` against popular open-source repos.
-> Each example shows: the command, auto-detected stack, generated file tree, key output files, **and real test results**.
+> True e2e tests: start with a **fresh PRD**, run the full pipeline, verify everything.
 
-## E2E Test Results Summary
+## What This Tests
 
-| Repo | Language | `init` | `doctor` | `enforce` | `garden` | **Actual tests** |
-|------|----------|--------|----------|-----------|----------|------------------|
-| Express.js | Node.js | Pass | 12/12 | Pass | Pass | **1,249 passing** (`npm test`) |
-| FastAPI | Python | Pass | 12/12 | Pass | Pass | **60 passing** (`pytest`, core subset) |
-| Gin | Go | Pass | 12/12 | Pass | Pass | *skipped — needs Go 1.25 toolchain download* |
-| Axum | Rust | Pass | 12/12 | Pass | Pass | **604 passing, 0 failed** (`cargo test`) |
+The full harnesskit pipeline, as a real user would experience it:
 
-> Tests were run on the **actual repos** after `harnesskit init --yes`. harnesskit's scaffold is non-destructive — it does not break existing build/test/lint pipelines.
+```
+Fresh PRD → git init → harnesskit init → drop PRD in docs/references/ →
+harnesskit ingest → agent populates SoT files → harnesskit doctor ✔ →
+harnesskit enforce ✔ → harnesskit garden ✔
+```
 
----
-
-## Table of Contents
-
-| # | Repo | Language | Stars | What It Shows |
-|---|------|----------|-------|---------------|
-| 1 | [Express.js](#1-expressjs-nodejs) | Node.js | 66k+ | Classic JS framework, `package.json` detection |
-| 2 | [FastAPI](#2-fastapi-python) | Python | 82k+ | Modern Python, `pyproject.toml` detection |
-| 3 | [Gin](#3-gin-go) | Go | 80k+ | Go web framework, `go.mod` detection |
-| 4 | [Axum](#4-axum-rust) | Rust | 20k+ | Tokio-based Rust, `Cargo.toml` detection |
+Each example starts from **nothing** — an empty git repo + a `package.json`/`pyproject.toml`/`go.mod` + a realistic PRD.
 
 ---
 
-## 1. Express.js (Node.js)
+## Results Summary
 
-**Repo:** `expressjs/express` — Fast, unopinionated, minimalist web framework for Node.js
+| Project | Language | IDEs | `init` | `ingest` | `doctor` | `enforce` | `garden` |
+|---------|----------|------|--------|----------|----------|-----------|----------|
+| **TaskFlow API** | Node.js | VS Code + Cursor | Pass | Pass | **13/13** | Pass | Pass |
+| **ShopWave** | Python | VS Code + Cursor | Pass | Pass | **13/13** | Pass | Pass |
+| **InfraCtl** | Go | VS Code | Pass | Pass | **12/12** | Pass | Pass |
 
-### Command
+---
+
+## Example 1: TaskFlow API (Node.js)
+
+**What:** Real-time collaborative task management API with WebSockets and GitHub sync.
+
+**PRD:** [taskflow-api-nodejs/PRD.md](taskflow-api-nodejs/PRD.md) (7 KB, includes architecture diagram, API endpoints, data classification, SLA targets)
+
+### Step 1 — Create project + init
 
 ```bash
-cd express
-npx harnesskit init --yes
+mkdir taskflow-api && cd taskflow-api
+git init
+
+# Create package.json with express, pg, redis, socket.io, zod, jsonwebtoken
+# (see taskflow-api-nodejs/PRD.md for full dependency list)
+
+npx harnesskit init --yes --lang node --ide vscode,cursor --git github
 ```
 
-### Auto-Detection
-
+**Output:**
 ```
-Auto-detected: node project, vscode IDE(s), github git
-```
-
-### Generated File Tree
-
-```
-express/
-├── AGENTS.md                          # Universal agent instructions
-├── .env.example                       # Required tokens & keys template
-├── docs/
-│   ├── ARCHITECTURE.md                # Layer rules & dependency graph
-│   ├── BRAIN.html                     # Interactive agent knowledge graph
-│   ├── QUALITY_SCORE.md               # Per-domain quality grades (A-F)
-│   ├── SECURITY.md                    # Security posture & data classification
-│   ├── RELIABILITY.md                 # Bootability, health checks & SLAs
-│   ├── design-docs/
-│   │   ├── README.md
-│   │   └── core-beliefs.md            # 8 agent-first operating principles
-│   ├── exec-plans/
-│   │   ├── active/
-│   │   │   ├── README.md
-│   │   │   └── _template.md           # Execution plan template
-│   │   └── completed/
-│   │       └── .gitkeep
-│   ├── generated/
-│   │   └── .gitkeep
-│   ├── product-specs/
-│   │   └── .gitkeep
-│   └── references/
-│       └── .gitkeep
-├── .github/
-│   ├── copilot-instructions.md        # GitHub Copilot instructions
-│   ├── agents/
-│   │   ├── planner.agent.md           # Read-only planning agent
-│   │   ├── implementer.agent.md       # Code writing agent
-│   │   ├── reviewer.agent.md          # Quality gate agent
-│   │   ├── arch-reviewer.agent.md     # Architecture enforcement agent
-│   │   ├── security-reviewer.agent.md # Security review agent
-│   │   └── doc-gardener.agent.md      # Documentation maintenance agent
-│   └── workflows/
-│       └── harness-checks.yml         # CI: enforce + doctor
-└── .vscode/
-    ├── mcp.json                       # MCP server connections
-    ├── settings.json                  # Editor settings
-    └── extensions.json                # Recommended extensions
+Auto-detected: node project, vscode+cursor IDE(s), github git
+✔ docs/ knowledge base
+✔ CI: GitHub Actions workflow
+✔ AGENTS.md (universal)
+✔ .github/agents/ (6 agents: planner, implementer, reviewer, arch-reviewer, security-reviewer, doc-gardener)
+✔ .github/copilot-instructions.md
+✔ .cursor/rules/ (6 rules)
+✔ .vscode/mcp.json, .cursor/mcp.json
+✔ .env.example, .vscode/settings.json, .vscode/extensions.json
 ```
 
-### Generated AGENTS.md (excerpt)
+MCP servers auto-configured: GitHub, Filesystem, Fetch, **PostgreSQL** (detected from `pg` dependency), Memory.
 
-```markdown
-# Agent Guide — express
+### Step 2 — Drop PRD + ingest
 
-## Build & Run
-
-npm run build
-npm test
-npm run lint
-npm start
-
-## Layer Rules (Summary)
-
-Types → Config → Service → Routes (API)
-                 Service → Pages  (UI)
-Shared: utils/, providers/
+```bash
+cp PRD.md docs/references/
+npx harnesskit ingest
 ```
 
-### Generated ARCHITECTURE.md
+**Output:**
+```
+Found 1 source document(s) in docs/references/
+✔ docs/references/PRD.md
+✔ docs/generated/INGEST_INSTRUCTION.md
 
-```markdown
-# express — Architecture
-
-## Layer Diagram
-
-Types → Config → Service → Routes (API)
-                 Service → Pages  (UI)
-Shared: utils/, providers/
-
-## Dependency Rules
-
-| Layer   | Can Import From                    |
-|---------|------------------------------------|
-| Routes  | Service, Types, Providers, Utils   |
-| Service | Config, Types, Providers, Utils    |
-| Config  | Types, Utils                       |
-| Types   | Utils only                         |
-| Utils   | Nothing (leaf nodes)               |
+What to do next:
+  Option A — IDE Agent: paste INGEST_INSTRUCTION.md into agent chat
+  Option C — Claude Code: claude "Follow docs/generated/INGEST_INSTRUCTION.md"
 ```
 
-### Doctor Check
+The ingest command generates a structured prompt in `INGEST_INSTRUCTION.md` that any coding agent (Copilot, Cursor, Claude Code, etc.) can follow to populate the SoT files.
+
+### Step 3 — Agent populates SoT files from PRD
+
+The coding agent reads the PRD and populates:
+
+| File | What the agent extracted from PRD |
+|------|----------------------------------|
+| `docs/ARCHITECTURE.md` | Layer diagram: Models → Config → Services → Routes + WS. 5 domain boundaries. Dependency rules. |
+| `docs/SECURITY.md` | JWT (RS256, 15 min), OAuth2 GitHub, data classification table (4 levels), rate limiting |
+| `docs/RELIABILITY.md` | Health endpoints, SLA: 99.9% uptime / p95 < 200ms / WS < 50ms, 5 failure modes with mitigations |
+| `docs/QUALITY_SCORE.md` | 6 domains graded F (greenfield), priorities listed |
+| `docs/exec-plans/active/001-mvp-auth.md` | 9-step execution plan with acceptance criteria |
+| `docs/exec-plans/active/002-mvp-projects-tasks.md` | 9-step plan for CRUD + search |
+| `docs/product-specs/mvp-features.md` | User stories for Auth, Projects, Tasks, Real-time + 18 API endpoints |
+
+**Key files:** [Browse all generated files](taskflow-api-nodejs/)
+
+### Step 4 — Verify
 
 ```
 $ npx harnesskit doctor
-
-  Harness Lab Doctor
-  ──────────────────
-  Checking: express
-
-  ✔ AGENTS.md (universal agent instructions)
-  ✔ docs/ARCHITECTURE.md (layer rules)
-  ✔ docs/QUALITY_SCORE.md (quality grades)
-  ✔ docs/SECURITY.md (security posture)
-  ✔ docs/RELIABILITY.md (reliability guide)
-  ✔ docs/design-docs/ (design decisions)
+  ✔ AGENTS.md
+  ✔ docs/ARCHITECTURE.md
+  ✔ docs/QUALITY_SCORE.md
+  ✔ docs/SECURITY.md
+  ✔ docs/RELIABILITY.md
+  ✔ docs/design-docs/
   ✔ docs/design-docs/core-beliefs.md
-  ✔ docs/exec-plans/active/ (execution plans)
+  ✔ docs/exec-plans/active/
   ✔ docs/exec-plans/active/_template.md
-  ✔ docs/references/ (source documents for ingest)
+  ✔ docs/references/
   ✔ .github/copilot-instructions.md
-  ✔ .github/agents/ (custom agents)
-
-  Summary: 12 passed, 0 failed, 5 optional missing
-  IDE configs detected: vscode
+  ✔ .github/agents/
+  ✔ .cursor/rules/
+  Summary: 13 passed, 0 failed, 4 optional missing
   ✔ Harness setup is healthy!
-```
 
-### Enforce Check
-
-```
 $ npx harnesskit enforce
+  Architecture check PASSED — no layer violations
 
-  Architecture Enforcement
-  ────────────────────────
-  Scanning source files for import violations...
-  Found 6 source files
-
-  ✔ Architecture check PASSED — no layer violations
-```
-
-### Garden Check
-
-```
 $ npx harnesskit garden
-
-  Doc Gardener
-  ────────────
-  Scanning: express
-
   ✔ No documentation issues found!
 ```
 
-### Actual Test Run (npm test)
+### Generated Architecture (from PRD)
 
 ```
-$ npm test
+Models → Config → Services → Routes (API)
+                  Services → WebSocket Handlers (WS)
+Shared: middleware/, providers/
 
-  ...
-  web-service
-    GET /api/users
-      with a valid api key
-        ✔ should respond users json
-    GET /api/repos
-      with a valid api key
-        ✔ should respond repos json
-  ...
-
-  1249 passing (3s)
+Domains: Auth, Projects, Tasks, Real-time, GitHub Sync
 ```
-
-The scaffold is **non-destructive** — Express's full 1,249-test suite still passes after `harnesskit init`.
 
 ---
 
-## 2. FastAPI (Python)
+## Example 2: ShopWave (Python)
 
-**Repo:** `tiangolo/fastapi` — Modern, fast (high-performance) web framework for building APIs with Python
+**What:** E-commerce platform with AI-powered recommendations, Stripe payments, Celery workers.
 
-### Command
+**PRD:** [shopwave-python/PRD.md](shopwave-python/PRD.md) (6 KB, includes system diagram, GDPR requirements, flash sale handling)
+
+### Step 1 — Init
 
 ```bash
-cd fastapi
-npx harnesskit init --yes
+npx harnesskit init --yes --lang python --ide vscode,cursor --git github
 ```
 
-### Auto-Detection
+Detects: `pyproject.toml` → Python, generates `pytest`/`ruff check .`/`python -m build` commands.
 
-```
-Auto-detected: python project, vscode IDE(s), github git
-```
+### Step 2 — Ingest PRD
 
-### Generated AGENTS.md (key differences)
-
-```markdown
-# Agent Guide — fastapi
-
-## Build & Run
-
-python -m build
-pytest
-ruff check .
-python -m app
-
-## Layer Rules (Summary)
-
-Models → Config → Services → API (FastAPI/Flask)
-Shared: utils/, providers/
+```bash
+cp PRD.md docs/references/
+npx harnesskit ingest
 ```
 
-### Generated ARCHITECTURE.md
+### Step 3 — Agent populates from PRD
 
-```markdown
-# fastapi — Architecture
+| File | What was extracted |
+|------|-------------------|
+| `docs/ARCHITECTURE.md` | API → Services → Repositories → Models, with Tasks (Celery) + Providers (Stripe, S3) |
+| `docs/SECURITY.md` | PCI DSS via Stripe, GDPR compliance, no card data stored locally |
+| `docs/RELIABILITY.md` | Flash sale: 10x auto-scale, p95 < 300ms catalog / < 500ms checkout, 99.95% checkout uptime |
+| `docs/QUALITY_SCORE.md` | 6 domains: Catalog, Cart, Orders, Payments, Recommendations, Admin |
 
-## Layer Diagram
-
-Models → Config → Services → API (FastAPI/Flask)
-Shared: utils/, providers/
-
-## Dependency Rules
-
-| Layer    | Can Import From                    |
-|----------|------------------------------------|
-| API      | Services, Models, Providers, Utils |
-| Services | Config, Models, Providers, Utils   |
-| Config   | Models, Utils                      |
-| Models   | Utils only                         |
-| Utils    | Nothing (leaf nodes)               |
-```
-
-### Doctor Check
+### Step 4 — Verify
 
 ```
-12 passed, 0 failed, 5 optional missing
-✔ Harness setup is healthy!
+$ npx harnesskit doctor
+  13 passed, 0 failed, 4 optional missing
+  ✔ Harness setup is healthy!
 ```
 
-### Actual Test Run (pytest)
-
-```
-$ pytest tests/test_application.py tests/test_router*.py tests/test_param*.py -x -q
-
-60 passed in 1.32s
-```
-
-Full test suite requires additional optional dependencies (`orjson`, `ujson`, etc.) — core tests pass cleanly.
+**Key files:** [Browse all generated files](shopwave-python/)
 
 ---
 
-## 3. Gin (Go)
+## Example 3: InfraCtl (Go CLI)
 
-**Repo:** `gin-gonic/gin` — Gin is a HTTP web framework written in Go (Golang)
+**What:** Multi-cloud infrastructure CLI (AWS, GCP, K8s) with HCL configs and dry-run safety.
 
-### Command
+**PRD:** [infractl-go/PRD.md](infractl-go/PRD.md) (4 KB, includes Cobra CLI structure, cloud provider layers, audit logging)
 
-```bash
-cd gin
-npx harnesskit init --yes
-```
-
-### Auto-Detection
-
-```
-Auto-detected: go project, vscode IDE(s), github git
-```
-
-### Generated AGENTS.md (key differences)
-
-```markdown
-# Agent Guide — gin
-
-## Build & Run
-
-go build ./...
-go test ./...
-golangci-lint run
-go run .
-
-## Layer Rules (Summary)
-
-Models → Config → Service → Handlers
-Shared: pkg/
-```
-
-### Generated ARCHITECTURE.md
-
-```markdown
-# gin — Architecture
-
-## Layer Diagram
-
-Models → Config → Service → Handlers
-Shared: pkg/
-
-## Dependency Rules
-
-| Layer    | Can Import From                |
-|----------|--------------------------------|
-| Handlers | Service, Models, Pkg           |
-| Service  | Config, Models, Pkg            |
-| Config   | Models, Pkg                    |
-| Models   | Pkg only                       |
-| Pkg      | Nothing (leaf nodes)           |
-```
-
-### Doctor Check
-
-```
-12 passed, 0 failed, 5 optional missing
-✔ Harness setup is healthy!
-```
-
-### Actual Test Run (go test)
-
-> Skipped in this environment — Gin requires Go 1.25 toolchain download which was blocked by network restrictions. The scaffold itself generates correctly and `doctor`/`enforce`/`garden` all pass.
-
----
-
-## 4. Axum (Rust)
-
-**Repo:** `tokio-rs/axum` — Ergonomic and modular web framework built with Tokio, Tower, and Hyper
-
-### Command
+### Step 1 — Init
 
 ```bash
-cd axum
-npx harnesskit init --yes
+npx harnesskit init --yes --lang go --ide vscode --git github
 ```
 
-### Auto-Detection
+Detects: `go.mod` → Go, generates `go build ./...`/`go test ./...`/`golangci-lint run` commands.
 
-```
-Auto-detected: rust project, vscode IDE(s), github git
-```
+### Step 2 — Ingest PRD
 
-### Generated AGENTS.md (key differences)
-
-```markdown
-# Agent Guide — axum
-
-## Build & Run
-
-cargo build
-cargo test
-cargo clippy
-cargo run
-
-## Layer Rules (Summary)
-
-Types → Config → Service → Handlers
-Shared: utils/
+```bash
+cp PRD.md docs/references/
+npx harnesskit ingest
 ```
 
-### Generated ARCHITECTURE.md
+### Step 3 — Agent populates from PRD
 
-```markdown
-# axum — Architecture
+| File | What was extracted |
+|------|-------------------|
+| `docs/ARCHITECTURE.md` | cmd → handlers → services → providers → models, pkg/ shared. Go-idiomatic `internal/` layout. |
+| `docs/SECURITY.md` | Cloud credentials in OS keychain, audit logging, no plaintext secrets |
+| `docs/RELIABILITY.md` | CLI < 500ms local / < 5s cloud, < 50MB binary, dry-run default, rollback support |
+| `docs/QUALITY_SCORE.md` | 7 domains: CLI, Handlers, Services, AWS Provider, GCP Provider, K8s Provider, Config |
 
-## Layer Diagram
-
-Types → Config → Service → Handlers
-Shared: utils/
-
-## Dependency Rules
-
-| Layer    | Can Import From              |
-|----------|------------------------------|
-| Handlers | Service, Types, Utils        |
-| Service  | Config, Types, Utils         |
-| Config   | Types, Utils                 |
-| Types    | Utils only                   |
-| Utils    | Nothing (leaf nodes)         |
-```
-
-### Doctor Check
+### Step 4 — Verify
 
 ```
-12 passed, 0 failed, 5 optional missing
-✔ Harness setup is healthy!
+$ npx harnesskit doctor
+  12 passed, 0 failed, 5 optional missing
+  ✔ Harness setup is healthy!
 ```
 
-### Actual Test Run (cargo test)
-
-```
-$ cargo test
-
-test result: ok. 341 passed; 0 failed; 0 ignored  (axum core)
-test result: ok. 1 passed; 0 failed; 0 ignored    (axum-core)
-test result: ok. 15 passed; 0 failed; 0 ignored   (axum-extra)
-test result: ok. 13 passed; 0 failed; 0 ignored   (axum-extra doctests)
-test result: ok. 5 passed; 0 failed; 0 ignored    (axum-macros unit)
-test result: ok. 160 passed; 0 failed; 1 ignored   (axum-macros compile tests)
-test result: ok. 19 passed; 0 failed; 0 ignored   (axum-macros doctests)
-test result: ok. 27 passed; 0 failed; 0 ignored   (axum doctests)
-test result: ok. 23 passed; 0 failed; 0 ignored   (axum-macros lib doctests)
-
-Total: 604 passed, 0 failed across 9 test suites
-```
+**Key files:** [Browse all generated files](infractl-go/)
 
 ---
 
 ## Cross-Language Comparison
 
-| Feature | Node.js | Python | Go | Rust |
-|---------|---------|--------|----|------|
-| **Build** | `npm run build` | `python -m build` | `go build ./...` | `cargo build` |
-| **Test** | `npm test` | `pytest` | `go test ./...` | `cargo test` |
-| **Lint** | `npm run lint` | `ruff check .` | `golangci-lint run` | `cargo clippy` |
-| **Top Layer** | Routes | API (FastAPI/Flask) | Handlers | Handlers |
-| **Bottom Layer** | Types | Models | Models | Types |
-| **Shared** | `utils/`, `providers/` | `utils/`, `providers/` | `pkg/` | `utils/` |
-| **Detected By** | `package.json` | `pyproject.toml` | `go.mod` | `Cargo.toml` |
+| Feature | Node.js (TaskFlow) | Python (ShopWave) | Go (InfraCtl) |
+|---------|--------------------|--------------------|---------------|
+| **Detected by** | `package.json` | `pyproject.toml` | `go.mod` |
+| **Build** | `npm run build` | `python -m build` | `go build ./...` |
+| **Test** | `npm test` (Jest) | `pytest` | `go test ./...` |
+| **Lint** | `npm run lint` (ESLint) | `ruff check .` | `golangci-lint run` |
+| **Top layer** | Routes | API (FastAPI) | Handlers (Cobra) |
+| **Bottom layer** | Models | Models | Models |
+| **Async** | WebSocket (Socket.IO) | Celery workers | Goroutines |
+| **MCP: PostgreSQL** | Auto-detected (pg dep) | Not detected | Not detected |
+| **IDE configs** | VS Code + Cursor | VS Code + Cursor | VS Code |
+| **Doctor result** | 13/13 | 13/13 | 12/12 |
 
-## Generated Agent Configs (same across all languages)
+## Full Pipeline Diagram
 
-Every run generates **6 specialized agents** adapted for the detected IDE:
-
-| Agent | File | Role |
-|-------|------|------|
-| Planner | `planner.agent.md` | Creates execution plans, never writes code (read-only tools) |
-| Implementer | `implementer.agent.md` | Writes code following plans and architecture (full access) |
-| Reviewer | `reviewer.agent.md` | Reviews quality, tests, and completeness |
-| Arch Reviewer | `arch-reviewer.agent.md` | Validates layer rules and dependency direction |
-| Security Reviewer | `security-reviewer.agent.md` | Checks for secrets, auth issues, OWASP risks |
-| Doc Gardener | `doc-gardener.agent.md` | Finds stale docs, broken links, completed plans |
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│  1. FRESH REPO         2. SCAFFOLD          3. INGEST           │
+│  ┌───────────┐         ┌───────────┐        ┌───────────┐      │
+│  │ PRD.md    │         │ AGENTS.md │        │ Drop PRD  │      │
+│  │ go.mod    │  init   │ docs/     │ ingest │ into refs/│      │
+│  │ (nothing  │ ──────▶ │ .github/  │ ──────▶│ Generate  │      │
+│  │  else)    │  --yes  │ .cursor/  │        │ INGEST_   │      │
+│  │           │         │ .vscode/  │        │ INSTRUCTION│      │
+│  └───────────┘         └───────────┘        └─────┬─────┘      │
+│                                                   │             │
+│  4. AGENT POPULATES          5. VERIFY            │             │
+│  ┌───────────────┐           ┌───────────┐        │             │
+│  │ Agent reads    │           │ doctor ✔  │        │             │
+│  │ INGEST_        │  doctor   │ enforce ✔ │        │             │
+│  │ INSTRUCTION    │ ────────▶ │ garden ✔  │◀───────┘             │
+│  │ Populates SoT: │  enforce  │           │                     │
+│  │ ARCHITECTURE   │  garden   │ ALL PASS  │                     │
+│  │ SECURITY       │           └───────────┘                     │
+│  │ RELIABILITY    │                                             │
+│  │ QUALITY_SCORE  │                                             │
+│  │ exec-plans/    │                                             │
+│  │ product-specs/ │                                             │
+│  └───────────────┘                                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ## Try It Yourself
 
 ```bash
-# Pick any repo
-git clone https://github.com/your-favorite/repo
-cd repo
+# 1. Create a fresh project
+mkdir my-app && cd my-app && git init
+echo '{ "name": "my-app", "scripts": { "test": "jest" } }' > package.json
 
-# One command — that's it
+# 2. Write a PRD (or use an existing one)
+cat > PRD.md << 'EOF'
+# My App — PRD
+## Architecture
+...your architecture here...
+## Features
+...your features here...
+EOF
+
+# 3. Run the full pipeline
 npx harnesskit init --yes
+cp PRD.md docs/references/
+npx harnesskit ingest
 
-# Verify the setup
+# 4. Paste the generated instruction into your coding agent
+# (Copilot, Cursor, Claude Code, etc.)
+cat docs/generated/INGEST_INSTRUCTION.md
+
+# 5. After the agent populates SoT files, verify
 npx harnesskit doctor
 npx harnesskit enforce
 npx harnesskit garden

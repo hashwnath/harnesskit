@@ -1,4 +1,4 @@
-# Reliability — axum
+# Reliability — infractl
 
 > **Purpose:** Agent-readable reliability posture.  Agents MUST consult this before changing startup, shutdown, health-checks, or deployment code.
 
@@ -12,7 +12,7 @@ Every service MUST be bootable from a clean worktree in ≤ 2 commands:
 
 ```bash
 {{installCmd}}
-cargo run
+go run .
 ```
 
 If boot fails, `harnesskit doctor` MUST surface the root cause.

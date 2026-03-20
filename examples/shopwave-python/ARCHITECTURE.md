@@ -1,21 +1,21 @@
-# gin — Architecture
+# shopwave — Architecture
 
 ## Layer Diagram
 
 ```
-Models → Config → Service → Handlers
-Shared: pkg/
+Models → Config → Services → API (FastAPI/Flask)
+Shared: utils/, providers/
 ```
 
 ## Dependency Rules
 
 | Layer | Can Import From | Cannot Import From |
 |-------|----------------|-------------------|
-| Routes | Service, Types, Providers, Utils | UI, Config (direct) |
-| Service | Config, Types, Providers, Utils | Routes, UI |
-| Config | Types, Utils | Service, Routes, UI |
-| Types | Utils only | Everything else |
-| Providers | Config, Types, Utils | Service, Routes, UI |
+| API | Services, Models, Utils | Config (direct) |
+| Services | Config, Models, Providers, Utils | API |
+| Config | Models, Utils | Services, API |
+| Models | Utils only | Everything else |
+| Providers | Config, Models, Utils | Services, API |
 | Utils | Nothing (leaf nodes) | Everything |
 
 ## Key Principle

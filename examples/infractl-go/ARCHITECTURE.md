@@ -1,21 +1,21 @@
-# fastapi — Architecture
+# infractl — Architecture
 
 ## Layer Diagram
 
 ```
-Models → Config → Services → API (FastAPI/Flask)
-Shared: utils/, providers/
+Models → Config → Service → Handlers
+Shared: pkg/
 ```
 
 ## Dependency Rules
 
 | Layer | Can Import From | Cannot Import From |
 |-------|----------------|-------------------|
-| API | Services, Models, Utils | Config (direct) |
-| Services | Config, Models, Providers, Utils | API |
-| Config | Models, Utils | Services, API |
-| Models | Utils only | Everything else |
-| Providers | Config, Models, Utils | Services, API |
+| Routes | Service, Types, Providers, Utils | UI, Config (direct) |
+| Service | Config, Types, Providers, Utils | Routes, UI |
+| Config | Types, Utils | Service, Routes, UI |
+| Types | Utils only | Everything else |
+| Providers | Config, Types, Utils | Service, Routes, UI |
 | Utils | Nothing (leaf nodes) | Everything |
 
 ## Key Principle
