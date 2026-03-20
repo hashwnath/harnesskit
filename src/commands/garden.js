@@ -4,7 +4,7 @@
  */
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, dirname, relative } from 'node:path';
 import { heading, step, fail, warn, info, bold, color } from '../ui.js';
 
 export async function garden(targetDir) {
@@ -66,7 +66,8 @@ function checkFileRefs(rootDir, relMdPath) {
     if (linkPath.startsWith('http') || linkPath.startsWith('#') || linkPath.startsWith('mailto:')) continue;
 
     // Resolve relative to the markdown file's directory
-    const resolved = join(rootDir, linkPath.split('#')[0]);
+    const mdDir = dirname(join(rootDir, relMdPath));
+    const resolved = join(mdDir, linkPath.split('#')[0]);
     if (!existsSync(resolved)) {
       fail(`${relMdPath}: broken link → "${linkPath}"`);
       issues++;

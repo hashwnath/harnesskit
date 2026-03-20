@@ -1,1 +1,1 @@
-export { enforce } from './commands/enforce.js';
+export { enforce } from '../commands/enforce.js';

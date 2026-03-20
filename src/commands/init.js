@@ -138,22 +138,33 @@ export async function init(targetDir, flags) {
   heading('Generating Harness Engineering scaffold...');
 
   // 1. Knowledge base (docs/)
-  step('docs/ knowledge base');
-  generate('docs/ARCHITECTURE.md.tmpl', join(targetDir, 'docs', 'ARCHITECTURE.md'), ctx);
-  generate('docs/BRAIN.html.tmpl', join(targetDir, 'docs', 'BRAIN.html'), ctx);
-  generate('docs/QUALITY_SCORE.md.tmpl', join(targetDir, 'docs', 'QUALITY_SCORE.md'), ctx);
-  generate('docs/SECURITY.md.tmpl', join(targetDir, 'docs', 'SECURITY.md'), ctx);
-  generate('docs/RELIABILITY.md.tmpl', join(targetDir, 'docs', 'RELIABILITY.md'), ctx);
-  generate('docs/core-beliefs.md.tmpl', join(targetDir, 'docs', 'design-docs', 'core-beliefs.md'), ctx);
-  generate('docs/DESIGN_DOCS_README.md.tmpl', join(targetDir, 'docs', 'design-docs', 'README.md'), ctx);
-  generate('docs/exec-plans-readme.md.tmpl', join(targetDir, 'docs', 'exec-plans', 'active', 'README.md'), ctx);
-  generate('docs/exec-plan-template.md.tmpl', join(targetDir, 'docs', 'exec-plans', 'active', '_template.md'), ctx);
+  const docsFiles = [
+    ['docs/ARCHITECTURE.md.tmpl', join(targetDir, 'docs', 'ARCHITECTURE.md')],
+    ['docs/BRAIN.html.tmpl', join(targetDir, 'docs', 'BRAIN.html')],
+    ['docs/QUALITY_SCORE.md.tmpl', join(targetDir, 'docs', 'QUALITY_SCORE.md')],
+    ['docs/SECURITY.md.tmpl', join(targetDir, 'docs', 'SECURITY.md')],
+    ['docs/RELIABILITY.md.tmpl', join(targetDir, 'docs', 'RELIABILITY.md')],
+    ['docs/core-beliefs.md.tmpl', join(targetDir, 'docs', 'design-docs', 'core-beliefs.md')],
+    ['docs/DESIGN_DOCS_README.md.tmpl', join(targetDir, 'docs', 'design-docs', 'README.md')],
+    ['docs/exec-plans-readme.md.tmpl', join(targetDir, 'docs', 'exec-plans', 'active', 'README.md')],
+    ['docs/exec-plan-template.md.tmpl', join(targetDir, 'docs', 'exec-plans', 'active', '_template.md')],
+  ];
+  let docsWritten = 0;
+  for (const [tmpl, out] of docsFiles) {
+    if (generate(tmpl, out, ctx)) docsWritten++;
+  }
   writeFile(join(targetDir, 'docs', 'exec-plans', 'completed', '.gitkeep'), '');
 
   // Empty placeholder directories (progressive docs/ structure)
   writeFile(join(targetDir, 'docs', 'product-specs', '.gitkeep'), '');
   writeFile(join(targetDir, 'docs', 'references', '.gitkeep'), '');
   writeFile(join(targetDir, 'docs', 'generated', '.gitkeep'), '');
+
+  if (docsWritten > 0) {
+    step('docs/ knowledge base');
+  } else {
+    warn('docs/ knowledge base exists — skipped');
+  }
 
   // 1b. CI/CD integration (optional — based on git provider)
   if (config.git === 'github') {
@@ -169,7 +180,6 @@ export async function init(targetDir, flags) {
   generateAgents(targetDir, config.ides, ctx);
 
   // 2b. Tool & MCP configs
-  heading('Generating tool & MCP configs...');
   const toolingNeeds = detectToolingNeeds(targetDir);
   ctx.toolingNeeds = toolingNeeds;
   generateTooling(targetDir, config.ides, ctx);
